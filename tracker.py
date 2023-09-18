@@ -1,9 +1,11 @@
 from db import get_db, create_tables
 import questionary as q
 
+
 class Tracker:
     def __init__(self, name):
         self.name = name
+
 
 def create_tracker():
     name = q.text("What is the name of your Tracker?").ask()

@@ -6,25 +6,32 @@ import sys
 def analyze(tracker_name):
     choice = q.select("What would you like to do?",
                       choices=["View habits by frequency",
+                               "View the longest streak",
+                               "View the longest streak by frequency",
                                "Quit"]).ask()
     if choice == "View habits by frequency":
-        frequency = q.select("What frequency would you like to view?",
-                             choices=["daily",
-                                      "weekly"]).ask()
-        if frequency == "daily":
-            frequency = 1
-        elif frequency == "weekly":
-            frequency = 7
-
-        view_habits_by_frequency(tracker_name, frequency)
+        view_habits_by_frequency(tracker_name)
         analyze(tracker_name)
+
+    elif choice == "View the longest streak":
+        view_the_longest_streak(tracker_name)
+        analyze(tracker_name)
+
+    elif choice == "View the longest streak by frequency":
+        view_the_longest_streak_by_frequency(tracker_name)
+        analyze(tracker_name)
+
     elif choice == "Quit":
         sys.exit()
 
+
 def view_habits_by_frequency(tracker_name, frequency):
-    conn = get_db()
-    cur = conn.cursor()
-    cur.execute('SELECT * FROM habit WHERE tracker = ? AND frequency = ?', (tracker_name, frequency))
-    habits = cur.fetchall()
-    for habit in habits:
-        print(habit)
+    pass
+
+
+def view_the_longest_streak(tracker_name):
+    pass
+
+
+def view_the_longest_streak_by_frequency(tracker_name):
+    pass
