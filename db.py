@@ -1,4 +1,6 @@
 import sqlite3
+from datetime import datetime as dt
+from datetime import timedelta as td
 
 import questionary as q
 
@@ -19,17 +21,32 @@ def create_tables():
                 'description TEXT NOT NULL, '
                 'frequency_int INTEGER NOT NULL,'
                 'frequency TEXT NOT NULL,'
-                'current_streak INTEGER NOT NULL, DEFAULT 0,'
+                'last_completed_at TEXT,'
+                'current_streak INTEGER NOT NULL DEFAULT 0,'
+                'current_status TEXT NOT NULL DEFAULT "TO BE DONE",'
                 ' tracker TEXT NOT NULL,'
                 ' FOREIGN KEY(tracker) REFERENCES tracker(name))')
     conn.commit()
 
+
 def view_habits(tracker_name):
     conn = get_db()
     cur = conn.cursor()
+    update_habits_status(tracker_name)
     cur.execute('SELECT * FROM habit WHERE tracker = ?', (tracker_name,))
     habits = cur.fetchall()
     print('Here are your habits:')
     for habit in habits:
-        print(f'\nHabit: {habit[0]}, Description:  {habit[1]}, Frequency: {habit[3]}')
+        print(habit)
 
+
+def update_habits_status(tracker_name):
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM habit WHERE tracker = ? AND current_status = "DONE"', (tracker_name,))
+    habits = cur.fetchall()
+    for habit in habits:
+        if dt.today() - dt.strptime(habit[4], '%Y-%m-%d') > td(days=habit[2]):
+            cur.execute('UPDATE habit SET current_status = ? WHERE tracker = ? AND name = ?',
+                        ("TO BE DONE", tracker_name, habit[0]))
+            conn.commit()

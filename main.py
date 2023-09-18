@@ -1,7 +1,7 @@
 import sys
 import questionary as q
 from tracker import create_tracker
-from habit import create_habit, delete_habit
+from habit import create_habit, delete_habit, mark_habit_as_done
 from db import view_habits
 from analyze import analyze
 
@@ -46,9 +46,14 @@ def tracker_menu(tracker_name):
 
     elif choice == "View Habits":
         view_habits(tracker_name)
-        choice = q.select('OPTIONS', choices=['Create new Habit', 'Delete Habit', 'Go back']).ask()
+        choice = q.select('OPTIONS', choices=['Create new Habit', 'Mark Habit as completed', 'Delete Habit', 'Go back']).ask()
         if choice == 'Create new Habit':
             create_habit(tracker_name)
+            view_habits(tracker_name)
+
+        elif choice == 'Mark Habit as completed':
+            habit_name = q.text('What is the name of the habit you would like to mark as completed?').ask()
+            mark_habit_as_done(tracker_name, habit_name)
             view_habits(tracker_name)
         elif choice == 'Delete Habit':
             habit_name = q.text('What is the name of the habit you would like to delete?').ask()

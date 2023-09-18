@@ -2,6 +2,8 @@ import questionary as q
 from db import get_db
 from timespan import TimeSpan
 from tracker import Tracker
+from datetime import date as dt
+
 
 class Habit:
     def __init__(self, name: str, description: str, frequency: TimeSpan, tracker: Tracker):
@@ -25,10 +27,12 @@ def create_habit(tracker):
     habit = Habit(name, description, frequency, tracker)
     conn = get_db()
     cur = conn.cursor()
-    cur.execute('INSERT INTO habit VALUES (?, ?, ?, ?, ?)',
-                (habit.name, habit.description, habit.frequency.span, str(habit.frequency), habit.tracker))
+    cur.execute('INSERT INTO habit VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                (habit.name, habit.description, habit.frequency.span, str(habit.frequency), None, 0, "TO BE DONE",
+                 habit.tracker))
     conn.commit()
     print(f'Created Habit {habit.name}')
+
 
 def delete_habit(tracker_name, habit_name):
     conn = get_db()
@@ -36,3 +40,32 @@ def delete_habit(tracker_name, habit_name):
     cur.execute('DELETE FROM habit WHERE tracker = ? AND name = ?', (tracker_name, habit_name))
     conn.commit()
     print(f'Deleted Habit {habit_name}')
+
+
+def mark_habit_as_done(tracker_name, habit_name):
+    conn = get_db()
+    cur = conn.cursor()
+    update_habit_streak(tracker_name, habit_name)
+    cur.execute('UPDATE habit SET last_completed_at = ?, current_status = ? WHERE tracker = ? AND name = ?',
+                (dt.today(), "DONE", tracker_name, habit_name))
+    conn.commit()
+    print(f'Marked Habit {habit_name} as done')
+
+
+def update_habit_streak(tracker_name, habit_name):
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM habit WHERE tracker = ? AND name = ?', (tracker_name, habit_name))
+    habit = cur.fetchone()
+    if habit[5] == 0:
+        cur.execute('UPDATE habit SET current_streak = ? WHERE tracker = ? AND name = ?', (1, tracker_name, habit_name))
+        conn.commit()
+    elif habit[5] > 0:
+        if dt.today() - habit[4] <= habit[2]:
+            cur.execute('UPDATE habit SET current_streak = ? WHERE tracker = ? AND name = ?',
+                        (habit[5] + 1, tracker_name, habit_name))
+            conn.commit()
+        elif dt.today() - habit[4] > habit[2]:
+            cur.execute('UPDATE habit SET current_streak = ? WHERE tracker = ? AND name = ?',
+                        (1, tracker_name, habit_name))
+            conn.commit()
