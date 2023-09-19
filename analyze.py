@@ -25,8 +25,22 @@ def analyze(tracker_name):
         sys.exit()
 
 
-def view_habits_by_frequency(tracker_name, frequency):
-    pass
+def view_habits_by_frequency(tracker_name):
+    choice = q.select('What frequency would you like to view?', choices=['daily', 'weekly']).ask()
+    if choice == 'daily':
+        frequency = 1
+    elif choice == 'weekly':
+        frequency = 7
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM habit WHERE tracker = ? AND frequency = ?', (tracker_name, frequency))
+    habits = cur.fetchall()
+    if len(habits) == 0:
+        print(f'You have no habits with frequency {frequency}')
+    else:
+        print(f'\nYour habits with frequency {frequency}:\n')
+        for habit in habits:
+            print(f'{habit[0]} - {habit[3]} - {habit[6]}')
 
 
 def view_the_longest_streak(tracker_name):

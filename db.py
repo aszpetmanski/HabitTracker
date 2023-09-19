@@ -17,7 +17,7 @@ def create_tables():
     conn = get_db()
     cur = conn.cursor()
     cur.execute('CREATE TABLE IF NOT EXISTS tracker (name TEXT PRIMARY KEY NOT NULL)')
-    cur.execute('CREATE TABLE IF NOT EXISTS habit (name TEXT PRIMARY KEY NOT NULL, '
+    cur.execute('CREATE TABLE IF NOT EXISTS habit (name TEXT NOT NULL, '
                 'description TEXT NOT NULL, '
                 'frequency_int INTEGER NOT NULL,'
                 'frequency TEXT NOT NULL,'
@@ -25,19 +25,28 @@ def create_tables():
                 'current_streak INTEGER NOT NULL DEFAULT 0,'
                 'current_status TEXT NOT NULL DEFAULT "TO BE DONE",'
                 ' tracker TEXT NOT NULL,'
+                'PRIMARY KEY(name, tracker),'
                 ' FOREIGN KEY(tracker) REFERENCES tracker(name))')
     conn.commit()
 
 
-def view_habits(tracker_name):
+def get_all_habits(tracker_name):
     conn = get_db()
     cur = conn.cursor()
     update_habits_status(tracker_name)
     cur.execute('SELECT * FROM habit WHERE tracker = ?', (tracker_name,))
     habits = cur.fetchall()
-    print('Here are your habits:')
-    for habit in habits:
-        print(habit)
+    return [habit for habit in habits]
+
+
+def view_habits(tracker_name):
+    all_habits = get_all_habits(tracker_name)
+    if len(all_habits) == 0:
+        print('You have no habits yet')
+    else:
+        print('\nYour habits:\n')
+        for habit in all_habits:
+            print(f'{habit[0]} - {habit[1]} - {habit[3]} - {habit[6]}')
 
 
 def update_habits_status(tracker_name):

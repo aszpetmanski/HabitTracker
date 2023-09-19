@@ -1,5 +1,5 @@
 import questionary as q
-from db import get_db
+from db import get_db, get_all_habits
 from timespan import TimeSpan
 from tracker import Tracker
 from datetime import date as dt
@@ -17,7 +17,10 @@ class Habit:
 
 
 def create_habit(tracker):
-    name = q.text("What is the name of your Habit?").ask()
+    habit_names = [habit[0] for habit in get_all_habits(tracker)]
+    name = q.text("What is the name of your Habit?",
+                  validate=lambda text: True if text not in habit_names else
+                  'Habit with this name already exsists').ask()
     description = q.text("What is the description of your Habit?").ask()
     choice = q.select("What is the frequency of your Habit?", choices=['daily', 'weekly']).ask()
     if choice == 'daily':

@@ -2,7 +2,7 @@ import sys
 import questionary as q
 from tracker import create_tracker
 from habit import create_habit, delete_habit, mark_habit_as_done
-from db import view_habits
+from db import view_habits, get_db, create_tables
 from analyze import analyze
 
 
@@ -30,6 +30,10 @@ def main_menu():
 
 def log_in():
     tracker_name = q.text("What is the name of your Tracker?").ask()
+    if tracker_name == 'test':
+        conn = get_db(test=True)
+        create_tables()
+        tracker_menu(tracker_name)
     tracker_menu(tracker_name)
 
 
