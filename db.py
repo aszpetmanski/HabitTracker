@@ -3,9 +3,6 @@ from datetime import datetime as dt
 from datetime import timedelta as td
 
 
-import questionary as q
-
-
 def get_db(test=False):
     if test:
         conn = sqlite3.connect('test_database.db')
@@ -27,13 +24,13 @@ def create_tables():
                 'current_status TEXT NOT NULL DEFAULT "TO BE DONE",'
                 ' tracker TEXT NOT NULL,'
                 'PRIMARY KEY(name, tracker),'
-                ' FOREIGN KEY(tracker) REFERENCES tracker(name))')
+                ' FOREIGN KEY(tracker) REFERENCES tracker(name) ON DELETE CASCADE)')
     cur.execute('CREATE TABLE IF NOT EXISTS habit_completed_at '
                 '(habit_name TEXT NOT NULL,'
                 'completed_at TEXT NOT NULL,'
                 'tracker TEXT NOT NULL,'
                 'PRIMARY KEY(habit_name, completed_at),'
-                'FOREIGN KEY(habit_name, tracker) REFERENCES habit(name, tracker))')
+                'FOREIGN KEY(habit_name, tracker) REFERENCES habit(name, tracker) ON DELETE CASCADE)')
     conn.commit()
 
 

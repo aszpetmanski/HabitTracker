@@ -43,6 +43,7 @@ def delete_habit(tracker_name, habit_name):
     conn = get_db()
     cur = conn.cursor()
     cur.execute('DELETE FROM habit WHERE tracker = ? AND name = ?', (tracker_name, habit_name))
+    cur.execute('DELETE FROM habit_completed_at WHERE tracker = ? AND habit_name = ?', (tracker_name, habit_name))
     conn.commit()
     print(f'Deleted Habit {habit_name}')
 
@@ -63,6 +64,7 @@ def update_habit_streak(tracker_name, habit_name):
     cur = conn.cursor()
     cur.execute('SELECT * FROM habit WHERE tracker = ? AND name = ?', (tracker_name, habit_name))
     habit = cur.fetchone()
+    print(habit)
     if habit[5] == 0:
         cur.execute('UPDATE habit SET current_streak = ? WHERE tracker = ? AND name = ?', (1, tracker_name, habit_name))
         conn.commit()

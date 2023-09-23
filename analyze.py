@@ -4,32 +4,6 @@ import sys
 from datetime import date, timedelta
 from db import get_all_habits, get_all_daily_habits
 
-def analyze(tracker_name):
-    choice = q.select("What would you like to do?",
-                      choices=["View habits by frequency",
-                               "View the longest streak",
-                               "View the longest streak by frequency",
-                               "View my daily habit tendency",
-                               "Quit"]).ask()
-    if choice == "View habits by frequency":
-        view_habits_by_frequency(tracker_name)
-        analyze(tracker_name)
-
-    elif choice == "View the longest streak":
-        view_the_longest_streak(tracker_name)
-        analyze(tracker_name)
-
-    elif choice == "View the longest streak by frequency":
-        view_the_longest_streak_by_frequency(tracker_name)
-        analyze(tracker_name)
-
-    elif choice == "View my daily habit tendency":
-        view_my_daily_habit_tendency(tracker_name)
-        analyze(tracker_name)
-
-    elif choice == "Quit":
-        sys.exit()
-
 
 def view_habits_by_frequency(tracker_name):
     choice = q.select('What frequency would you like to view?', choices=['daily', 'weekly']).ask()
@@ -47,6 +21,7 @@ def view_habits_by_frequency(tracker_name):
         print(f'\nYour habits with frequency {choice}:\n')
         for habit in habits:
             print(f'{habit[0]} - {habit[3]} - {habit[6]}')
+    print('\n')
 
 
 def view_the_longest_streak(tracker_name):
@@ -75,6 +50,7 @@ def view_the_longest_streak_by_frequency(tracker_name):
         print(f'You have no completed habits with that frequency yet.')
     else:
         print(f'\nYour longest streak is {habit[5]} and is for your {habit[3]} habit {habit[0]}\n')
+    print('\n')
 
 def view_my_daily_habit_tendency(tracker_name):
     habit_name = q.select('What habit would you like to view?', choices=[habit[0] for habit in get_all_daily_habits(tracker_name)]).ask()
