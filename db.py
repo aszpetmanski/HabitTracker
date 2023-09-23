@@ -2,6 +2,7 @@ import sqlite3
 from datetime import datetime as dt
 from datetime import timedelta as td
 
+
 import questionary as q
 
 
@@ -27,6 +28,12 @@ def create_tables():
                 ' tracker TEXT NOT NULL,'
                 'PRIMARY KEY(name, tracker),'
                 ' FOREIGN KEY(tracker) REFERENCES tracker(name))')
+    cur.execute('CREATE TABLE IF NOT EXISTS habit_completed_at '
+                '(habit_name TEXT NOT NULL,'
+                'completed_at TEXT NOT NULL,'
+                'tracker TEXT NOT NULL,'
+                'PRIMARY KEY(habit_name, completed_at),'
+                'FOREIGN KEY(habit_name, tracker) REFERENCES habit(name, tracker))')
     conn.commit()
 
 
@@ -35,6 +42,14 @@ def get_all_habits(tracker_name):
     cur = conn.cursor()
     update_habits_status(tracker_name)
     cur.execute('SELECT * FROM habit WHERE tracker = ?', (tracker_name,))
+    habits = cur.fetchall()
+    return [habit for habit in habits]
+
+def get_all_daily_habits(tracker_name):
+    conn = get_db()
+    cur = conn.cursor()
+    update_habits_status(tracker_name)
+    cur.execute('SELECT * FROM habit WHERE tracker = ? AND frequency_int = 1', (tracker_name,))
     habits = cur.fetchall()
     return [habit for habit in habits]
 
@@ -47,6 +62,7 @@ def view_habits(tracker_name):
         print('\nYour habits:\n')
         for habit in all_habits:
             print(f'{habit[0]} - {habit[1]} - {habit[3]} - {habit[6]}')
+        print('\n')
 
 
 def update_habits_status(tracker_name):

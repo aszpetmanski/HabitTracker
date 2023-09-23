@@ -2,7 +2,9 @@ import questionary as q
 from db import get_db, get_all_habits
 from timespan import TimeSpan
 from tracker import Tracker
-from datetime import date as dt
+from datetime import datetime as dt
+from datetime import timedelta as td
+from datetime import date as d
 
 
 class Habit:
@@ -50,7 +52,8 @@ def mark_habit_as_done(tracker_name, habit_name):
     cur = conn.cursor()
     update_habit_streak(tracker_name, habit_name)
     cur.execute('UPDATE habit SET last_completed_at = ?, current_status = ? WHERE tracker = ? AND name = ?',
-                (dt.today(), "DONE", tracker_name, habit_name))
+                (d.today(), "DONE", tracker_name, habit_name))
+    cur.execute('INSERT INTO habit_completed_at VALUES (?, ?, ?)', (habit_name, d.today(), tracker_name))
     conn.commit()
     print(f'Marked Habit {habit_name} as done')
 
@@ -64,11 +67,11 @@ def update_habit_streak(tracker_name, habit_name):
         cur.execute('UPDATE habit SET current_streak = ? WHERE tracker = ? AND name = ?', (1, tracker_name, habit_name))
         conn.commit()
     elif habit[5] > 0:
-        if dt.today() - habit[4] <= habit[2]:
+        if dt.today() - dt.strptime(habit[4], '%Y-%m-%d') <= td(days=habit[2]):
             cur.execute('UPDATE habit SET current_streak = ? WHERE tracker = ? AND name = ?',
                         (habit[5] + 1, tracker_name, habit_name))
             conn.commit()
-        elif dt.today() - habit[4] > habit[2]:
+        elif dt.today() - dt.strptime(habit[4], '%Y-%m-%d') > td(days=habit[2]):
             cur.execute('UPDATE habit SET current_streak = ? WHERE tracker = ? AND name = ?',
                         (1, tracker_name, habit_name))
             conn.commit()
