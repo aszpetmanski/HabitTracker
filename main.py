@@ -7,11 +7,13 @@ from analyze import view_habits_by_frequency, view_the_longest_streak, view_the_
 
 
 def cli():
+    """Main CLI function"""
     while True:
         main_menu()
 
 
 def main_menu():
+    """This function is the main menu of the CLI"""
     choice = q.select("What would you like to do?",
                       choices=["Log to your Tracker (use 'test' name for testing)",
                                "Create new Tracker",
@@ -29,6 +31,7 @@ def main_menu():
 
 
 def log_in():
+    """This function logs in to the tracker"""
     tracker_name = q.text("What is the name of your Tracker?").ask()
     if tracker_name == 'test':
         conn = get_db(test=True)
@@ -38,6 +41,7 @@ def log_in():
 
 
 def tracker_menu(tracker_name):
+    """This function is the tracker menu of the CLI"""
     choice = q.select("What would you like to do?",
                       choices=["Create new Habit",
                                "View Habits",
@@ -83,6 +87,7 @@ def tracker_menu(tracker_name):
         sys.exit()
 
 def analyze(tracker_name):
+    """This function is the analyze menu of the CLI"""
     choice = q.select("What would you like to do?",
                       choices=["View habits by frequency",
                                "View the longest streak",

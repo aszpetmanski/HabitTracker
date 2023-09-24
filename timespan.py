@@ -1,4 +1,5 @@
 class TimeSpan:
+    """TimeSpan class"""
     def __init__(self, span: int):
         self.span = span
 

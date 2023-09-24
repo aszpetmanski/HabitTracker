@@ -8,6 +8,7 @@ from datetime import date as d
 
 
 class Habit:
+    """Habit class"""
     def __init__(self, name: str, description: str, frequency: TimeSpan, tracker: Tracker):
         self.name = name
         self.description = description
@@ -19,6 +20,7 @@ class Habit:
 
 
 def create_habit(tracker):
+    """This function validates the habit name and creates a new habit in the database"""
     habit_names = [habit[0] for habit in get_all_habits(tracker)]
     name = q.text("What is the name of your Habit?",
                   validate=lambda text: True if text not in habit_names else
@@ -40,6 +42,7 @@ def create_habit(tracker):
 
 
 def delete_habit(tracker_name, habit_name):
+    """This function deletes a habit from the database and its history of completions"""
     conn = get_db()
     cur = conn.cursor()
     cur.execute('DELETE FROM habit WHERE tracker = ? AND name = ?', (tracker_name, habit_name))
@@ -49,6 +52,7 @@ def delete_habit(tracker_name, habit_name):
 
 
 def mark_habit_as_done(tracker_name, habit_name):
+    """This function marks a habit as done in the database"""
     conn = get_db()
     cur = conn.cursor()
     update_habit_streak(tracker_name, habit_name)
@@ -60,6 +64,7 @@ def mark_habit_as_done(tracker_name, habit_name):
 
 
 def update_habit_streak(tracker_name, habit_name):
+    """This function updates the streak of a habit in the database"""
     conn = get_db()
     cur = conn.cursor()
     cur.execute('SELECT * FROM habit WHERE tracker = ? AND name = ?', (tracker_name, habit_name))

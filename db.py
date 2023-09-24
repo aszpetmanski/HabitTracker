@@ -4,6 +4,7 @@ from datetime import timedelta as td
 
 
 def get_db(test=False):
+    """Get a connection to the database"""
     if test:
         conn = sqlite3.connect('test_database.db')
         return conn
@@ -12,6 +13,7 @@ def get_db(test=False):
 
 
 def create_tables():
+    """Creates all the necessary tables in the database if they don't exist"""
     conn = get_db()
     cur = conn.cursor()
     cur.execute('CREATE TABLE IF NOT EXISTS tracker (name TEXT PRIMARY KEY NOT NULL)')
@@ -35,6 +37,7 @@ def create_tables():
 
 
 def get_all_habits(tracker_name):
+    """Get all habits from the database"""
     conn = get_db()
     cur = conn.cursor()
     update_habits_status(tracker_name)
@@ -43,6 +46,7 @@ def get_all_habits(tracker_name):
     return [habit for habit in habits]
 
 def get_all_daily_habits(tracker_name):
+    """Get all daily habits from the database"""
     conn = get_db()
     cur = conn.cursor()
     update_habits_status(tracker_name)
@@ -52,6 +56,7 @@ def get_all_daily_habits(tracker_name):
 
 
 def view_habits(tracker_name):
+    """Prints all habits to the console"""
     all_habits = get_all_habits(tracker_name)
     if len(all_habits) == 0:
         print('You have no habits yet')
@@ -63,6 +68,7 @@ def view_habits(tracker_name):
 
 
 def update_habits_status(tracker_name):
+    """Updates the status of all habits in the database"""
     conn = get_db()
     cur = conn.cursor()
     cur.execute('SELECT * FROM habit WHERE tracker = ? AND current_status = "DONE"', (tracker_name,))
